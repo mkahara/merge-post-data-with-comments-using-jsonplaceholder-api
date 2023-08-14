@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Merge post data with its comments using JSONPlaceholder API</title>
+    <!-- Page styling -->
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        border: 1px solid #e8e8e8;
+      }
+
+      th, td {
+        border: 1px solid #e8e8e8;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Click the button below to fetch the post and merge its comments</h2>
+    <button onclick="getPost()">Get Post</button>
+    <div id="mergedData">
+    </div>
+  </body>
+  <script type="application/javascript">
+
+  /** Function to get the post and its comments.
+   * It is triggered upon clicking the Get Post button.
+   */
+  function getPost() {
+    fetch('https://jsonplaceholder.typicode.com/posts/50')
+        .then((response) => response.json())
+        .then((post) => {
+          fetch('https://jsonplaceholder.typicode.com/posts/50/comments')
+              .then((response) => response.json())
+              .then((comments) => {
+                const postWithComments = { ...post, comments: comments };
+                console.log('Merged Data:', postWithComments); //Log merged data to the console
+
+                const mergedDataElement = document.getElementById('mergedData');
+
+                // Unhide the merged content div
+                const mergedData = document.querySelector('#mergedData');
+                mergedData.style.display = 'block';
+
+                // Create a HTML string to display the merged data
+                const html = `
+                    <p><b>Post ID: </b>${postWithComments.id}</p>
+                    <p><b>Title: </b>${postWithComments.title}</p>
+                    <p><b>Body: </b>${postWithComments.body}</p>
+                    <p><b>Comments:</b></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Comment Title</th>
+                                <th>Comment Body</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${postWithComments.comments.map(comment => `
+                                <tr>
+                                    <td>${comment.name}</td>
+                                    <td>${comment.body}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                // Set the HTML content of the element
+                mergedDataElement.innerHTML = html;
+              });
+        });
+  }
+
+  </script>
+</html>
